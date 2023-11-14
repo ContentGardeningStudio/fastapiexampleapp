@@ -30,15 +30,14 @@ Clone this repository & install base dependencies:
 
 ```shell
 git clone https://github.com/ContentGardeningStudio/fastapiexampleapp.git
-pip install -r requirements/base.txt
 ```
 
 ## Local development
 
-1. Install dev dependencies:
+1. Install dependencies:
 
 ```shell
-pip install -r requirements/dev.txt
+pip install -r requirements.txt
 ```
 
 2. Set up your environment:
