@@ -54,6 +54,23 @@ uvicorn src.main:app --reload
 #visit localhost:8080
 ```
 
+## TEST
+
+1. Test Structure
+
+- Tests are located in the `tests` directory.
+- `tests/auth.py` for testing user endpoints.
+
+2. Running Tests
+
+Ensure that your virtual environment is activated.
+
+Run the tests using `pytest`:
+
+```shell
+pytest tests/auth.py
+```
+
 ## TODO
 
 - Set up different configurations for SQLite in development.
