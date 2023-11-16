@@ -1,15 +1,15 @@
 # fastapiexampleapp
 
-FastAPI example app to learn some of the best practices
+FastAPI example app to showcase some of the best practices.
 
 ## Overview
 
-This is a demonstration of a FastAPI application using SQLAlchemy and SQLModel. The application allows users to share their projects and invite others to contribute.
+This is a demonstration of a FastAPI application using SQLAlchemy and SQLModel. The application allows users to share their projects and invite others to contribute to those projects.
 
 ## Key Features
 
 - User registration and authentication
-- User profiles with bio information
+- User profiles (name, email, bio text, etc)
 - Project creation and sharing
 
 ## Technical Choices
@@ -26,6 +26,8 @@ This is a demonstration of a FastAPI application using SQLAlchemy and SQLModel. 
 
 ## Getting Started
 
+You need a Python 3.10 (?) virtual environment.
+
 Clone this repository & install base dependencies:
 
 ```shell
@@ -34,36 +36,31 @@ git clone https://github.com/ContentGardeningStudio/fastapiexampleapp.git
 
 ## Local development
 
+Ensure that your virtual environment is activated.
+
 1. Install dependencies:
 
-```shell
-pip install -r requirements.txt
-```
+	```shell
+	pip install -r requirements.txt
+	```
 
 2. Set up your environment:
 
-   - Development Mode:
-
-   - Use SQLite for the database
-   - Set `DEVELOPMENT_MODE=True`
+	- Development Mode:
+	
+		- Use SQLite for the database
+		- Set `DEVELOPMENT_MODE=True`
 
 3. Run the application:
 
-```shell
-uvicorn src.main:app --reload
-#visit localhost:8080
-```
+	```shell
+	uvicorn src.main:app --reload
+	#visit localhost:8080
+	```
 
-## TEST
+### Tests
 
-1. Test Structure
-
-- Tests are located in the `tests` directory.
-- `tests/auth.py` for testing user endpoints.
-
-2. Running Tests
-
-Ensure that your virtual environment is activated.
+Tests are located in the `tests` directory.
 
 Run the tests using `pytest`:
 
@@ -73,9 +70,7 @@ pytest tests/auth.py
 
 ## TODO
 
-- Set up different configurations for SQLite in development.
-
-Auth:
+Profile:
 
 - Implement endpoints for profile creation.
 - Create endpoints for user login and authentication.
