@@ -51,6 +51,9 @@ pip install -r requirements.txt
 
 ```shell
 cd src
+python database.py
+# create database if not exists
+
 uvicorn main:app --reload
 #visit localhost:8080
 ```
@@ -61,8 +64,6 @@ uvicorn main:app --reload
 
 Auth:
 
-- Improve user model & add user profil model.
-- Set up user authentication.
 - Implement endpoints for profile creation.
 - Create endpoints for user login and authentication.
 - Allow users to view and edit their profiles.
