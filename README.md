@@ -50,11 +50,7 @@ pip install -r requirements.txt
 3. Run the application:
 
 ```shell
-cd src
-python database.py
-# create database if not exists
-
-uvicorn main:app --reload
+uvicorn src.main:app --reload
 #visit localhost:8080
 ```
 

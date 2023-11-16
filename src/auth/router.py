@@ -5,18 +5,18 @@ from fastapi import Depends, APIRouter, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 
-from database import get_session
-from .models import User, UserInDB
-from .schemas import Token, RegistrationData
-from .service import (
+from src.database import get_session
+from src.config import JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+
+from src.auth.models import User, UserInDB
+from src.auth.schemas import Token, RegistrationData
+from src.auth.service import (
     get_password_hash,
     get_user_par_email,
     create_access_token,
     authenticate_user,
     get_current_active_user,
 )
-
-from config import JWT_ACCESS_TOKEN_EXPIRE_MINUTES
 
 
 router = APIRouter()
@@ -41,7 +41,12 @@ async def login_for_access_token(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.post("/register", response_model=User, tags=["users"])
+@router.post(
+    "/register",
+    response_model=User,
+    tags=["users"],
+    status_code=status.HTTP_201_CREATED,
+)
 async def register_user(
     data: RegistrationData,
     session: Session = Depends(get_session),
@@ -74,7 +79,13 @@ async def register_user(
     return new_user
 
 
-@router.get("/users/", tags=["users"])
+# We need to protect this endpoint (Fixme)
+# to allow only sttaf & superuser user to access to users list
+@router.get(
+    "/users/",
+    tags=["users"],
+    status_code=status.HTTP_200_OK,
+)
 async def read_users(session: Session = Depends(get_session)):
     statement = select(UserInDB)
     results = session.exec(statement)
@@ -87,7 +98,11 @@ async def read_users(session: Session = Depends(get_session)):
     return sensitive_users
 
 
-@router.get("/users/me", tags=["users"])
+@router.get(
+    "/users/me",
+    tags=["users"],
+    status_code=status.HTTP_200_OK,
+)
 async def read_users_me(
     current_user: Annotated[UserInDB, Depends(get_current_active_user)]
 ):

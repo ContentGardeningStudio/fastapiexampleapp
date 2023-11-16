@@ -1,7 +1,5 @@
 import os
 
-from starlette.datastructures import CommaSeparatedStrings
-
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", True)
 DEBUG = os.getenv("LOG_LEVEL", "").strip().lower() == "debug"
 LOG_LEVEL = os.getenv("LOG_LEVEL")

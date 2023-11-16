@@ -7,11 +7,11 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlmodel import Session, select
 
-from database import get_session
-from .models import UserInDB
-from .schemas import TokenData
+from src.database import get_session
+from src.auth.models import UserInDB
+from src.auth.schemas import TokenData
 
-from config import (
+from src.config import (
     JWT_SECRET_KEY,
     JWT_ALGORITHM,
 )

@@ -4,14 +4,18 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from auth import router as auth_router
-from projects import router as project_router
+from src.database import create_db_and_tables
+from src.auth import router as auth_router
+from src.projects import router as project_router
 
-from config import (
+from src.config import (
     DEBUG,
     PROJECT_NAME,
     API_VERSION,
 )
+
+# create database
+create_db_and_tables()
 
 app = FastAPI(
     title=f"{PROJECT_NAME} API",
@@ -21,8 +25,8 @@ app = FastAPI(
 
 app.include_router(auth_router.router)
 app.include_router(project_router.router)
-app.mount("/static", StaticFiles(directory="../static"), name="static")
-templates = Jinja2Templates(directory="../templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
