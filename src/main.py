@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -32,3 +33,7 @@ async def homepage(*, request: Request):
             "request": request,
         },
     )
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", reload=True)
