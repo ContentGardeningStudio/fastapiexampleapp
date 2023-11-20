@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, EmailStr, constr
 
 
@@ -7,7 +8,7 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    email: EmailStr | None = None
+    email: Optional[EmailStr] = None
 
 
 class RegistrationData(BaseModel):

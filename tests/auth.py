@@ -22,7 +22,7 @@ client = TestClient(app)
 
 def test_create_user():
     sample_payload = {
-        "email": "user5@example.com",
+        "email": "test@example.com",
         "password": "pass123",
         "re_password": "pass123",
     }

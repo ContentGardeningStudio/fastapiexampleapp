@@ -1,3 +1,4 @@
+from typing import Optional
 from datetime import datetime, timedelta
 from typing import List, Annotated
 
@@ -43,7 +44,7 @@ def authenticate_user(session, email: str, password: str):
     return user
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
