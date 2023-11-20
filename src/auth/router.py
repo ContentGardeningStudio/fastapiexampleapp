@@ -9,7 +9,7 @@ from src.database import get_session
 from src.config import JWT_ACCESS_TOKEN_EXPIRE_MINUTES
 
 from src.auth.models import User, UserInDB
-from src.auth.schemas import Token, RegistrationData
+from src.auth.schemas import Token, RegistrationData, LoginData
 from src.auth.service import (
     get_password_hash,
     get_user_par_email,
@@ -27,7 +27,10 @@ async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session: Session = Depends(get_session),
 ):
+    # when using swagger ui we can't modify auth form attributes
+    # it use username & password by default
     user = authenticate_user(session, form_data.username, form_data.password)
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

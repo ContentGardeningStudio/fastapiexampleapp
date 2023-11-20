@@ -15,3 +15,8 @@ class RegistrationData(BaseModel):
     email: EmailStr
     password: constr(min_length=6)
     re_password: str
+
+
+class LoginData(BaseModel):
+    email: EmailStr
+    password: constr(min_length=6)
