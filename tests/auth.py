@@ -60,10 +60,7 @@ def test_login_for_access_token():
     login_data = {"username": fake_email, "password": fake_password}
 
     # Make a post request to the /token/ endpoint
-    try:
-        response = client.post("/token", data=login_data)
-    except Exception as e:
-        print(e)
+    response = client.post("/token", data=login_data)
 
     # Check that the response status code is 200 (OK)
     assert response.status_code == 200
