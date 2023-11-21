@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from faker import Faker
+import pytest
 
 
 from src.auth import router as auth_router
@@ -23,6 +24,21 @@ client = TestClient(app)
 fake = Faker()
 fake_email = fake.email()
 fake_password = fake.password()
+fake_picture = fake.file_name(extension="jpg")
+fake_bio = fake.paragraph(nb_sentences=3)
+
+
+@pytest.fixture
+def access_token():
+    # Make a post request to the /token/ endpoint to obtain access token
+    res = client.post(
+        "/token", data={"username": fake_email, "password": fake_password}
+    )
+
+    # Check if the token in response body
+    assert res.status_code == 200
+    access_token = res.json()["access_token"]
+    return access_token
 
 
 def test_create_user():
@@ -70,16 +86,7 @@ def test_login_for_access_token():
     assert response.json()["token_type"] == "bearer"
 
 
-def test_read_users_me():
-    # Make a post request to the /token/ endpoint to obtain access token
-    res = client.post(
-        "/token", data={"username": fake_email, "password": fake_password}
-    )
-
-    # Check if the token in respose body
-    assert res.status_code == 200
-    access_token = res.json()["access_token"]
-
+def test_read_users_me(access_token):
     # Add the token to the headers
     headers = {"Authorization": f"Bearer {access_token}"}
 
@@ -115,3 +122,39 @@ def test_read_users():
     # Additional assertions based on requirements
     # For example, check the length of users list
     assert len(response.json()) > 0
+
+
+def test_read_profiles_me(access_token):
+    # Add the token to the headers
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    # Make a request to the /profile/me endpoint with the token in the headers
+    response = client.get("/profiles/me", headers=headers)
+
+    # Check that the response status code is 200 (OK)
+    assert response.status_code == 200
+
+    # Check if the response contains the expected keys and values
+    expected_keys = ["picture", "bio"]
+    assert all(key in response.json() for key in expected_keys)
+
+
+def test_edit_current_user_profile(access_token):
+    # Add the token to the headers
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    profile_data = {"picture": fake_picture, "bio": fake_bio}
+
+    # Make a request to the /edit_profile endpoint with the token in the headers
+    response = client.post("/edit_profile", json=profile_data, headers=headers)
+
+    # Check that the response status code is 201 (Created)
+    assert response.status_code == 201
+
+    # Check if the response contains the expected keys and values
+    expected_keys = ["picture", "bio"]
+    assert all(key in response.json() for key in expected_keys)
+
+    # Check specific assertions for known values
+    assert response.json()["picture"] == fake_picture
+    assert response.json()["bio"] == fake_bio
