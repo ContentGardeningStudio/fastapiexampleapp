@@ -9,7 +9,7 @@ from passlib.context import CryptContext
 from sqlmodel import Session, select
 
 from src.database import get_session
-from src.auth.models import UserInDB
+from src.auth.models import User, UserInDB, Profile
 from src.auth.schemas import TokenData
 
 from src.config import (
@@ -29,14 +29,14 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def get_user_par_email(session, email: str):
+def get_user_by_email(session, email: str):
     statement = select(UserInDB).where(UserInDB.email == email)
     results = session.exec(statement)
     return results.first()
 
 
 def authenticate_user(session, email: str, password: str):
-    user = get_user_par_email(session, email)
+    user = get_user_by_email(session, email)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -72,7 +72,7 @@ async def get_current_user(
         token_data = TokenData(email=email)
     except JWTError:
         raise credentials_exception
-    user = get_user_par_email(session, email=token_data.email)
+    user = get_user_by_email(session, email=token_data.email)
     if user is None:
         raise credentials_exception
     return user
@@ -84,3 +84,19 @@ async def get_current_active_user(
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
+
+
+def get_profile_by_user_id(session, user_id: int):
+    statement = select(Profile).where(Profile.user_id == user_id)
+    results = session.exec(statement)
+    return results.first()
+
+
+def create_user_profile(session, user):
+    # Create a new Profile instance
+    new_profile = Profile(user_id=user.id)
+
+    # Add the new user to the database session and commit
+    session.add(new_profile)
+    session.commit()
+    session.refresh(new_profile)

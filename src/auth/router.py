@@ -9,20 +9,26 @@ from src.database import get_session
 from src.config import JWT_ACCESS_TOKEN_EXPIRE_MINUTES
 
 from src.auth.models import User, UserInDB
-from src.auth.schemas import Token, RegistrationData, LoginData
+from src.auth.schemas import Token, RegistrationData, ProfileData
 from src.auth.service import (
     get_password_hash,
-    get_user_par_email,
+    get_user_by_email,
     create_access_token,
     authenticate_user,
     get_current_active_user,
+    create_user_profile,
+    get_profile_by_user_id,
 )
 
 
 router = APIRouter()
 
 
-@router.post("/token", response_model=Token)
+@router.post(
+    "/token",
+    response_model=Token,
+    status_code=status.HTTP_200_OK,
+)
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session: Session = Depends(get_session),
@@ -66,7 +72,7 @@ async def register_user(
         raise HTTPException(status_code=422, detail="Passwords do not match.")
 
     # Check if the email is already registered
-    existing_user = get_user_par_email(session, email)
+    existing_user = get_user_by_email(session, email)
 
     if existing_user:
         raise HTTPException(status_code=422, detail="Email already registered.")
@@ -78,6 +84,9 @@ async def register_user(
     session.add(new_user)
     session.commit()
     session.refresh(new_user)
+
+    # creata a new profile automaticlly after registartion
+    create_user_profile(session, new_user)
 
     return new_user
 
@@ -110,3 +119,45 @@ async def read_users_me(
     current_user: Annotated[UserInDB, Depends(get_current_active_user)]
 ):
     return current_user.to_sensitive_user()
+
+
+@router.get(
+    "/profiles/me",
+    response_model=ProfileData,
+    tags=["profiles"],
+    status_code=status.HTTP_200_OK,
+)
+async def read_profiles_me(
+    current_user: Annotated[UserInDB, Depends(get_current_active_user)],
+    session: Session = Depends(get_session),
+):
+    # get current user profile for
+    profile = get_profile_by_user_id(session, current_user.id)
+
+    return {"picture": profile.picture, "bio": profile.bio}
+
+
+@router.post(
+    "/edit_profile",
+    response_model=ProfileData,
+    tags=["profiles"],
+    status_code=status.HTTP_201_CREATED,
+)
+async def edit_current_user_profile(
+    data: ProfileData,
+    current_user: Annotated[UserInDB, Depends(get_current_active_user)],
+    session: Session = Depends(get_session),
+):
+    # get current user profile
+    profile = get_profile_by_user_id(session, current_user.id)
+
+    # update profile data
+    profile.picture = data.picture
+    profile.bio = data.bio
+
+    # Add the new user to the database session and commit
+    session.add(profile)
+    session.commit()
+    session.refresh(profile)
+
+    return {"picture": profile.picture, "bio": profile.bio}

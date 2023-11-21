@@ -23,8 +23,8 @@ class UserInDB(User, table=True):
         )
 
 
-# class Profil(User, table=True):
-#     id: Optional[int] = Field(default=None, primary_key=True)
-#     user_id: Optional[int] = Field(foreign_key="user.id")
-#     picture: Optional[str]
-#     bio: Optional[str]
+class Profile(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="userindb.id")
+    picture: Optional[str]
+    bio: Optional[str]

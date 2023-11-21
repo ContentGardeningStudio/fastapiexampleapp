@@ -20,3 +20,8 @@ class RegistrationData(BaseModel):
 class LoginData(BaseModel):
     email: EmailStr
     password: constr(min_length=6)
+
+
+class ProfileData(BaseModel):
+    picture: Optional[str]
+    bio: Optional[str]
