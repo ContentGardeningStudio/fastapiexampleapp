@@ -29,6 +29,18 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
+def create_user(session, email, password):
+    # Create a new UserInDB instance
+    new_user = UserInDB(email=email, hashed_password=get_password_hash(password))
+
+    # Add the new user to the database session and commit
+    session.add(new_user)
+    session.commit()
+    session.refresh(new_user)
+
+    return new_user
+
+
 def get_user_by_email(session, email: str):
     statement = select(UserInDB).where(UserInDB.email == email)
     results = session.exec(statement)

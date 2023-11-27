@@ -1,0 +1,70 @@
+{% extends "base.html" %} {% block content %}
+
+<!-- REGISTER FORM -->
+
+<div id="auth_box" class="auth-box">
+    <form hx-post="/register" hx-swap="innerHTML" hx-target="#auth_box">
+        <h1 class="h3 mb-4 fw-normal text-center">Create your free account</h1>
+        <div id="errors"></div>
+        <div class="form-floating mt-4">
+            <input type="email" class="form-control" id="field_email" name="email" placeholder="name@example.com"
+                required>
+            <label for="field_email">Email address</label>
+        </div>
+        <div class="form-floating mt-4">
+            <input type="password" class="form-control" id="field_password" name="password" placeholder="Password"
+                required">
+            <label for="field_password">Password</label>
+            <div id="invalid_password" class="invalid-feedback" style="display: none;">
+                Password must be at least 6 characters long.
+            </div>
+        </div>
+        <div class="form-floating mt-4">
+            <input type="password" class="form-control" id="field_confirm_password" name="re_password"
+                placeholder="Confirm password" required>
+            <label for=" field_confirm_password">Confirm password</label>
+            <div id="invalid_re_password" class="invalid-feedback" style="display: none;">
+                Passwords do not match.
+            </div>
+        </div>
+        <button class="w-100 btn btn-lg btn-primary mt-4" type="submit">
+            Sign Up
+        </button>
+    </form>
+    <div class="row mt-4">
+        <p>
+            Already have an Account? <a href="/login" class="">Login here.</a>
+        </p>
+    </div>
+</div>
+
+<!-- END LOGIN FORM -->
+
+<script>
+    document.addEventListener('htmx:configRequest', function (e) {
+        const params = e.detail.parameters
+        const passErrorBox = document.querySelector("#invalid_password")
+        const repassErrorBox = document.querySelector("#invalid_re_password")
+
+        // check errors
+        let error = 0
+        if (params.password.length < 6) {
+            passErrorBox.style.display = "block"
+            error++
+        } else if (params.password != params.re_password) {
+            repassErrorBox.style.display = "block"
+            error++
+        }
+
+        if (error != 0) {
+            e.preventDefault()
+        } else {
+            passErrorBox.style.display = "none"
+            repassErrorBox.style.display = "none"
+        }
+
+    })
+</script>
+
+
+{% endblock %}
