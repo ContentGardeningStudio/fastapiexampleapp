@@ -1,0 +1,37 @@
+{% extends "base.html" %} {% block content %}
+<!-- LOGIN FORM -->
+
+<div id="auth_box" class="auth-box">
+    <div class="form-signin">
+        <form hx-post="/login">
+            <h1 class="h3 mb-4 fw-normal text-center">Sign in</h1>
+            <div id="errors"></div>
+            <div class="form-floating mt-4">
+                <input type="email" class="form-control" id="field_email" name="email" placeholder="name@example.com"
+                    required>
+                <label for="field_email">Email address</label>
+            </div>
+            <div class="form-floating mt-4">
+                <input type="password" class="form-control" id="field_password" name="password" placeholder="Password"
+                    required">
+                <label for="field_password">Password</label>
+                <div id="invalid_password" class="invalid-feedback" style="display: none;">
+                    Password must be at least 6 characters long.
+                </div>
+            </div>
+
+            <button class="w-100 btn btn-lg btn-primary mt-4" type="submit">
+                Sign In
+            </button>
+        </form>
+        <div class="row mt-4">
+            <p>
+                Don't have an Account? <a href="/register" class="">Create a new account.</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- END LOGIN FORM -->
+
+{% endblock %}

@@ -7,10 +7,13 @@ from sqlmodel import Session
 
 from src.database import get_session
 from src.utils import get_error_respose, get_success_respose
+from src.config import JWT_ACCESS_TOKEN_EXPIRE_MINUTES
 from src.auth.service import (
     create_user,
     create_user_profile,
     get_user_by_email,
+    authenticate_user,
+    create_access_token,
 )
 
 router = APIRouter()
@@ -72,3 +75,41 @@ async def register_user(
         return get_error_respose(
             request, message="Something went wrong please try again"
         )
+
+
+@router.get("/login", response_class=HTMLResponse, include_in_schema=False)
+async def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
+@router.post("/login", status_code=status.HTTP_200_OK, include_in_schema=False)
+async def login_user(
+    request: Request,
+    email: str = Form(...),
+    password: str = Form(...),
+    session: Session = Depends(get_session),
+):
+    # check user authentication
+    try:
+        user = authenticate_user(session, email, password)
+
+        if not user:
+            return get_error_respose(request, message="Incorrect Username or Password.")
+
+        access_token_expires = timedelta(minutes=JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": user.email}, expires_delta=access_token_expires
+        )
+
+        # if authenticate user successfully
+        # wa add token in response headers
+        response = Response()
+        response.set_cookie(key="Authorization", value=access_token, httponly=True)
+
+        # Add htmx redirect
+        response.set_cookie(key="HX-Redirect", value="/register")
+
+        return response
+
+    except Exception as e:
+        return get_error_respose(request, message="Incorrect Username or Password.")
