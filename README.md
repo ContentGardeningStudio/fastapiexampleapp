@@ -21,7 +21,7 @@ This is a demonstration of a FastAPI application using SQLAlchemy and SQLModel. 
 
 ### User Interface
 
-- Simple UX with Jinja2 for the initial version
+- Simple UX with Jinja2 and Htmx for the initial version
 - Later versions may explore using React for a more interactive interface
 
 ## Getting Started
@@ -40,23 +40,23 @@ Ensure that your virtual environment is activated.
 
 1. Install dependencies:
 
-	```shell
-	pip install -r requirements.txt
-	```
+   ```shell
+   pip install -r requirements.txt
+   ```
 
 2. Set up your environment:
 
-	- Development Mode:
-	
-		- Use SQLite for the database
-		- Set `DEVELOPMENT_MODE=True`
+   - Development Mode:
+
+     - Use SQLite for the database
+     - Set `DEVELOPMENT_MODE=True`
 
 3. Run the application:
 
-	```shell
-	uvicorn src.main:app --reload
-	#visit localhost:8080
-	```
+   ```shell
+   uvicorn src.main:app --reload
+   #visit localhost:8080
+   ```
 
 ### Tests
 
@@ -65,7 +65,7 @@ Tests are located in the `tests` directory.
 Run the tests using `pytest`:
 
 ```shell
-pytest tests/auth.py
+pytest
 ```
 
 ## TODO
