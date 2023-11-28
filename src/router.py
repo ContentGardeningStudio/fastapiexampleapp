@@ -43,24 +43,17 @@ async def register_user(
     # check password length
     if len(password) < 6:
         return get_error_respose(
-            request,
-            message="Password must be at least 6 characters long.",
+            request, message="Password must be at least 6 characters long."
         )
 
     # Check if the passwords match
     if password != re_password:
-        return get_error_respose(
-            request,
-            message="Passwords do not match.",
-        )
+        return get_error_respose(request, message="Passwords do not match.")
 
     # Check if the email is already registered
     existing_user = get_user_by_email(session, email)
     if existing_user:
-        return get_error_respose(
-            request,
-            message="Email already registered.",
-        )
+        return get_error_respose(request, message="Email already registered.")
 
     try:
         # Create a new user
@@ -80,8 +73,7 @@ async def register_user(
     except:
         # we show unknown server error
         return get_error_respose(
-            request,
-            message="Something went wrong please try again",
+            request, message="Something went wrong please try again"
         )
 
 
@@ -102,9 +94,7 @@ async def login_user(
         user = authenticate_user(session, email, password)
 
         if not user:
-            return get_error_respose(
-                request, message="Incorrect Username or Password.", status_code=401
-            )
+            return get_error_respose(request, message="Incorrect Username or Password.")
 
         access_token_expires = timedelta(minutes=JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(
@@ -123,9 +113,7 @@ async def login_user(
         return response
 
     except Exception as e:
-        return get_error_respose(
-            request, message="Incorrect Username or Password.", status_code=401
-        )
+        return get_error_respose(request, message="Incorrect Username or Password.")
 
 
 @router.get("/dashboard", response_class=HTMLResponse, include_in_schema=False)
