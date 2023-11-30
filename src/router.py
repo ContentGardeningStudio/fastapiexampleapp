@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request, Form, status
 from fastapi.responses import Response, HTMLResponse
@@ -8,12 +9,15 @@ from sqlmodel import Session
 from src.database import get_session
 from src.utils import get_error_respose, get_success_respose
 from src.config import JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+from src.auth.models import User, UserInDB
+
 from src.auth.service import (
     create_user,
     create_user_profile,
     get_user_by_email,
     authenticate_user,
     create_access_token,
+    get_current_user_with_redirect,
 )
 
 router = APIRouter()
@@ -107,8 +111,8 @@ async def login_user(
         # Add htmx redirect
         response.headers["HX-Redirect"] = "/dashboard"
 
-        # wa add token in response headers
-        response.set_cookie(key="Authorization", value=access_token, httponly=True)
+        # wa add token in response cookies
+        response.set_cookie(key="access_token", value=access_token, httponly=True)
 
         return response
 
@@ -117,5 +121,8 @@ async def login_user(
 
 
 @router.get("/dashboard", response_class=HTMLResponse, include_in_schema=False)
-async def dashboard_page(request: Request):
+async def dashboard_page(
+    request: Request,
+    current_user: Annotated[UserInDB, Depends(get_current_user_with_redirect)],
+):
     return templates.TemplateResponse("dashboard.html", {"request": request})

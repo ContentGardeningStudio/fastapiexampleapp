@@ -9,7 +9,8 @@ from passlib.context import CryptContext
 from sqlmodel import Session, select
 
 from src.database import get_session
-from src.auth.models import User, UserInDB, Profile
+from src.exceptions import RequiresLoginException
+from src.auth.models import UserInDB, Profile
 from src.auth.schemas import TokenData
 
 from src.config import (
@@ -18,7 +19,7 @@ from src.config import (
 )
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/token")
 
 
 def verify_password(plain_password, hashed_password):
@@ -87,6 +88,24 @@ async def get_current_user(
     user = get_user_by_email(session, email=token_data.email)
     if user is None:
         raise credentials_exception
+    return user
+
+
+async def get_current_user_with_redirect(
+    token: Annotated[str, Depends(oauth2_scheme)],
+    session: Session = Depends(get_session),
+):
+    try:
+        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise RequiresLoginException
+        token_data = TokenData(email=email)
+    except JWTError:
+        raise RequiresLoginException
+    user = get_user_by_email(session, email=token_data.email)
+    if user is None:
+        raise RequiresLoginException
     return user
 
 
