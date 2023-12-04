@@ -1,9 +1,10 @@
 {% extends "base.html" %} {% block content %}
+{% include('components/dashboard-nav.html') %}
 <!-- Private page -->
-<div>
+<div class="my-5">
     <div class="row">
         <div class="row col s4">
-            <h3>This is my private dashboard</h3>
+            <h3>Welcome back, {{username}} !</h3>
         </div>
     </div>
 </div>
