@@ -26,5 +26,6 @@ class UserInDB(User, table=True):
 class Profile(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="userindb.id")
+    username: Optional[str]
     picture: Optional[str]
-    bio: Optional[str]
+    bio: Optional[str] = Field(default="")

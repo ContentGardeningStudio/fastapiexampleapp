@@ -123,9 +123,20 @@ def get_profile_by_user_id(session, user_id: int):
     return results.first()
 
 
+async def get_current_user_profile(
+    current_user: Annotated[UserInDB, Depends(get_current_user_with_redirect)],
+    session: Session = Depends(get_session),
+):
+    profile = get_profile_by_user_id(session, current_user.id)
+    return profile
+
+
 def create_user_profile(session, user):
+    # Generate defult username from email
+    username = user.email.split("@")[0]
+
     # Create a new Profile instance
-    new_profile = Profile(user_id=user.id)
+    new_profile = Profile(user_id=user.id, username=username)
 
     # Add the new user to the database session and commit
     session.add(new_profile)

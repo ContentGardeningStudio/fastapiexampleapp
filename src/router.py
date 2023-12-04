@@ -9,7 +9,7 @@ from sqlmodel import Session
 from src.database import get_session
 from src.utils import get_error_respose, get_success_respose
 from src.config import JWT_ACCESS_TOKEN_EXPIRE_MINUTES
-from src.auth.models import User, UserInDB
+from src.auth.models import UserInDB, Profile
 
 from src.auth.service import (
     create_user,
@@ -18,6 +18,8 @@ from src.auth.service import (
     authenticate_user,
     create_access_token,
     get_current_user_with_redirect,
+    get_profile_by_user_id,
+    get_current_user_profile,
 )
 
 router = APIRouter()
@@ -123,6 +125,26 @@ async def login_user(
 @router.get("/dashboard", response_class=HTMLResponse, include_in_schema=False)
 async def dashboard_page(
     request: Request,
-    current_user: Annotated[UserInDB, Depends(get_current_user_with_redirect)],
+    profile: Annotated[Profile, Depends(get_current_user_profile)],
 ):
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    return templates.TemplateResponse(
+        "dashboard.html", {"request": request, "username": profile.username}
+    )
+
+
+@router.get("/profile/me", response_class=HTMLResponse, include_in_schema=False)
+async def profile_page(
+    request: Request,
+    current_user: Annotated[UserInDB, Depends(get_current_user_with_redirect)],
+    session: Session = Depends(get_session),
+):
+    profile = get_profile_by_user_id(session, current_user.id)
+
+    return templates.TemplateResponse(
+        "profile.html",
+        {
+            "request": request,
+            "email": current_user.email,
+            "profile": profile,
+        },
+    )
