@@ -155,7 +155,7 @@ async def edit_current_user_profile(
     profile.picture = data.picture
     profile.bio = data.bio
 
-    # Add the new user to the database session and commit
+    # Add the new profile to the database session and commit
     session.add(profile)
     session.commit()
     session.refresh(profile)

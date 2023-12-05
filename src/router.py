@@ -177,18 +177,15 @@ async def edit_profile_page(
         profile.username = username
         profile.bio = bio
 
-        print("=" * 80)
-        print(profile)
-
-        # Add the new user to the database session and commit
+        # Add the new profile to the database session and commit
         session.add(profile)
         session.commit()
         session.refresh(profile)
 
-        # if authenticate user successfully
+        # if profile updated successfully
         response = Response(status_code=status.HTTP_200_OK)
 
-        # Add htmx redirect
+        # Add htmx redirect to user profile page
         response.headers["HX-Redirect"] = "/profile/me"
 
         return response
