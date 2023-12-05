@@ -131,7 +131,7 @@ async def read_profiles_me(
     current_user: Annotated[UserInDB, Depends(get_current_active_user)],
     session: Session = Depends(get_session),
 ):
-    # get current user profile for
+    # get current user profile
     profile = get_profile_by_user_id(session, current_user.id)
 
     return {"picture": profile.picture, "bio": profile.bio}

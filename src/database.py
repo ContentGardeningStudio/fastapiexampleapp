@@ -3,6 +3,7 @@ from sqlmodel import SQLModel, Session, create_engine
 
 from src.config import DATABASE_URL
 from src.auth.models import *
+from src.projects.models import *
 
 engine = create_engine(
     DATABASE_URL,
