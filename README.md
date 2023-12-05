@@ -30,9 +30,9 @@ You need a Python 3.10 (?) virtual environment.
 
 Clone this repository & install base dependencies:
 
-```shell
-git clone https://github.com/ContentGardeningStudio/fastapiexampleapp.git
-```
+   ```shell
+   git clone https://github.com/ContentGardeningStudio/fastapiexampleapp.git
+   ```
 
 ## Local development
 
@@ -58,29 +58,29 @@ Ensure that your virtual environment is activated.
    #visit localhost:8080
    ```
 
+### Populating the Database
+
+For testing purposes, you can populate the database with initial data. Run the following command in your virtual environment:
+
+   ```shell
+   python src/populate.py
+   ```
+
 ### Tests
 
 Tests are located in the `tests` directory.
 
 Run the tests using `pytest`:
 
-```shell
-pytest
-```
+   ```shell
+   pytest
+   ```
 
 ## TODO
 
-Profile:
-
-- Implement endpoints for profile creation.
-- Create endpoints for user login and authentication.
-- Allow users to view and edit their profiles.
-- Write unit tests to ensure the functionality of endpoints and models.
-- .....
-
 Project:
 
-- Add functionality for users to create and manage projects.
-- Implement sharing features to invite others to contribute to projects.
-- Write unit tests to ensure the functionality of endpoints and models.
-- .....
+   - Add functionality for users to create and manage projects.
+   - Implement sharing features to invite others to contribute to projects.
+   - Write unit tests to ensure the functionality of endpoints and models.
+   - .....
