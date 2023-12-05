@@ -148,3 +148,52 @@ async def profile_page(
             "profile": profile,
         },
     )
+
+
+@router.get("/edit_profile/me", response_class=HTMLResponse, include_in_schema=False)
+async def edit_profile_page(
+    request: Request,
+    profile: Annotated[Profile, Depends(get_current_user_profile)],
+):
+    return templates.TemplateResponse(
+        "edit-profile.html",
+        {
+            "request": request,
+            "profile": profile,
+        },
+    )
+
+
+@router.post("/edit_profile", response_class=HTMLResponse, include_in_schema=False)
+async def edit_profile_page(
+    request: Request,
+    profile: Annotated[Profile, Depends(get_current_user_profile)],
+    username: str = Form(...),
+    bio: str = Form(...),
+    session: Session = Depends(get_session),
+):
+    try:
+        # update profile data
+        profile.username = username
+        profile.bio = bio
+
+        print("=" * 80)
+        print(profile)
+
+        # Add the new user to the database session and commit
+        session.add(profile)
+        session.commit()
+        session.refresh(profile)
+
+        # if authenticate user successfully
+        response = Response(status_code=status.HTTP_200_OK)
+
+        # Add htmx redirect
+        response.headers["HX-Redirect"] = "/profile/me"
+
+        return response
+
+    except Exception as e:
+        response = get_error_respose(request, message="Something went wrong.")
+        response.status_code = 422
+        return response

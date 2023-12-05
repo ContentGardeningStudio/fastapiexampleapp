@@ -1,0 +1,46 @@
+{% extends "base.html" %} {% block content %}
+{% include('components/dashboard-nav.html') %}
+<!-- Edit profile page -->
+<section style="background-color: #f4f5f7;">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col col-lg-6 mb-4 mb-lg-0">
+                <div class="card mb-3" style="border-radius: .5rem;">
+                    <div class="row g-0">
+                        <div class="col-md-4 text-center"
+                            style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
+                            <img src="{{ url_for('static', path='/profiles/default_profile.png') }}" alt="Avatar"
+                                class="img-fluid my-5" style="width: 80px;" />
+                            <h5>{{profile.username}}</h5>
+                            <p>Contributor</p>
+                            <i class="far fa-edit mb-5"></i>
+                        </div>
+                        <div class="col-md-8 p-4">
+                            <div class="form-profile" hx-ext="response-targets">
+                                <form hx-post="/edit_profile" hx-target-error="#errors">
+                                    <h1 class="h3 mb-4 fw-normal text-center">Edit my profile</h1>
+                                    <div id="errors"></div>
+                                    <div class="form-group mt-4">
+                                        <label for="field_username">Username</label>
+                                        <input type="text" class="form-control" id="field_username" name="username"
+                                            value="{{profile.username}}">
+                                    </div>
+                                    <div class="form-group mt-4">
+                                        <label for="field_textarea">Biography</label>
+                                        <textarea class="form-control" id="field_textarea" id="field_password"
+                                            name="bio" rows="6">{{profile.bio}}</textarea>
+                                    </div>
+                                    <button class="w-100 btn btn-lg btn-primary mt-4" type="submit">
+                                        Edit profile
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- end Edit Profile page -->
+{% endblock %}
