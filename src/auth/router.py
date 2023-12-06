@@ -123,7 +123,6 @@ async def read_users_me(
 
 @router.get(
     "/profiles/me",
-    response_model=ProfileData,
     tags=["profiles"],
     status_code=status.HTTP_200_OK,
 )
@@ -134,12 +133,15 @@ async def read_profiles_me(
     # get current user profile
     profile = get_profile_by_user_id(session, current_user.id)
 
-    return {"picture": profile.picture, "bio": profile.bio}
+    return {
+        "username": profile.username,
+        "picture": profile.picture,
+        "bio": profile.bio,
+    }
 
 
 @router.post(
     "/edit_profile",
-    response_model=ProfileData,
     tags=["profiles"],
     status_code=status.HTTP_201_CREATED,
 )
@@ -152,7 +154,7 @@ async def edit_current_user_profile(
     profile = get_profile_by_user_id(session, current_user.id)
 
     # update profile data
-    profile.picture = data.picture
+    profile.username = data.username
     profile.bio = data.bio
 
     # Add the new profile to the database session and commit
@@ -160,4 +162,8 @@ async def edit_current_user_profile(
     session.commit()
     session.refresh(profile)
 
-    return {"picture": profile.picture, "bio": profile.bio}
+    return {
+        "username": profile.username,
+        "picture": profile.picture,
+        "bio": profile.bio,
+    }

@@ -23,5 +23,5 @@ class LoginData(BaseModel):
 
 
 class ProfileData(BaseModel):
-    picture: Optional[str]
+    username: str
     bio: Optional[str]
