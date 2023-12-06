@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, List, Union
 from fastapi import Depends, APIRouter, status
 from sqlmodel import Session, select
 
@@ -7,8 +7,8 @@ from src.auth.models import UserInDB
 from src.auth.service import get_current_active_user
 
 from src.projects.models import Project
-from src.projects.schemas import ProjectData
-from src.projects.service import create_new_project, get_poject_by_user
+from src.projects.schemas import ProjectData, EditProjectData, ProjectResponse
+from src.projects.service import create_new_project, get_user_pojects, edit_user_project
 
 
 router = APIRouter()
@@ -16,7 +16,7 @@ router = APIRouter()
 
 @router.post(
     "/create_project",
-    response_model=ProjectData,
+    response_model=ProjectResponse,
     tags=["projects"],
     status_code=status.HTTP_201_CREATED,
 )
@@ -29,7 +29,11 @@ async def create_project(
     return create_new_project(session, data, current_user)
 
 
-@router.get("/projects/", tags=["projects"])
+@router.get(
+    "/projects/",
+    response_model=List[Union[ProjectResponse, None]],
+    tags=["projects"],
+)
 async def read_projects(session: Session = Depends(get_session)):
     statement = select(Project)
     results = session.exec(statement)
@@ -38,10 +42,24 @@ async def read_projects(session: Session = Depends(get_session)):
     return users
 
 
-@router.get("/projects/me", tags=["projects"])
+@router.get(
+    "/projects/me",
+    response_model=List[Union[ProjectResponse, None]],
+    tags=["projects"],
+)
 async def read_projects_me(
     current_user: Annotated[UserInDB, Depends(get_current_active_user)],
     session: Session = Depends(get_session),
 ):
     # get current user project
-    return get_poject_by_user(session, current_user)
+    return get_user_pojects(session, current_user)
+
+
+@router.post("/edit_project", response_model=ProjectResponse, tags=["projects"])
+async def read_projects_me(
+    data: EditProjectData,
+    current_user: Annotated[UserInDB, Depends(get_current_active_user)],
+    session: Session = Depends(get_session),
+):
+    # edit target project
+    return edit_user_project(session, data, current_user)
