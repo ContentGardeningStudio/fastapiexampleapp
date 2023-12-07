@@ -22,15 +22,15 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/token")
 
 
-def verify_password(plain_password, hashed_password):
+def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def get_password_hash(password):
+def get_password_hash(password: str):
     return pwd_context.hash(password)
 
 
-def create_user(session, email, password):
+def create_user(session: Session, email: str, password: str):
     # Create a new UserInDB instance
     new_user = UserInDB(email=email, hashed_password=get_password_hash(password))
 
@@ -42,13 +42,39 @@ def create_user(session, email, password):
     return new_user
 
 
-def get_user_by_email(session, email: str):
+def get_user_by_id(session: Session, id: int):
+    not_found_exception = HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="User not found.",
+    )
+
+    statement = select(UserInDB).where(UserInDB.id == id)
+    results = session.exec(statement)
+    user = results.first()
+
+    if user is None:
+        raise not_found_exception
+
+    return user
+
+
+def get_user_by_email(session: Session, email: str):
+    not_found_exception = HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="User not found.",
+    )
+
     statement = select(UserInDB).where(UserInDB.email == email)
     results = session.exec(statement)
-    return results.first()
+    user = results.first()
+
+    if user is None:
+        raise not_found_exception
+
+    return user
 
 
-def authenticate_user(session, email: str, password: str):
+def authenticate_user(session: Session, email: str, password: str):
     user = get_user_by_email(session, email)
     if not user:
         return False
@@ -117,7 +143,7 @@ async def get_current_active_user(
     return current_user
 
 
-def get_profile_by_user_id(session, user_id: int):
+def get_profile_by_user_id(session: Session, user_id: int):
     statement = select(Profile).where(Profile.user_id == user_id)
     results = session.exec(statement)
     return results.first()
@@ -131,7 +157,7 @@ async def get_current_user_profile(
     return profile
 
 
-def create_user_profile(session, user):
+def create_user_profile(session: Session, user):
     # Generate defult username from email
     username = user.email.split("@")[0]
 
