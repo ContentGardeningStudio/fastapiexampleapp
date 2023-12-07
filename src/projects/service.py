@@ -21,13 +21,32 @@ def create_new_project(session: Session, data: ProjectData, user):
     return new_project
 
 
-def get_user_pojects(session: Session, user):
+def get_user_pojects(session: Session, user_id: int):
     # get current user profile
-    profile = get_profile_by_user_id(session, user.id)
+    profile = get_profile_by_user_id(session, user_id)
 
     statement = select(Project).where(Project.profile_id == profile.id)
     results = session.exec(statement)
     return results.all()
+
+
+def get_project_by_id(session: Session, project_id: int):
+    not_found_exception = HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Project not found.",
+    )
+
+    # Check existing project
+    statement = select(Project).where(Project.id == project_id)
+    results = session.exec(statement)
+    target_project = results.first()
+
+    if target_project:
+        # Return target project
+        return target_project
+    else:
+        # Handle case where the provided project_id doesn't match any existing project
+        raise not_found_exception
 
 
 def edit_user_project(session: Session, data: EditProjectData, user):
@@ -36,32 +55,21 @@ def edit_user_project(session: Session, data: EditProjectData, user):
         detail="Not authorized to do this action.",
     )
 
-    not_found_exception = HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="Project not found.",
-    )
-
-    # get current user profile
+    # Get current user profile
     profile = get_profile_by_user_id(session, user.id)
 
-    # check existing project
-    statement = select(Project).where(Project.id == data.id)
-    results = session.exec(statement)
-    target_project = results.first()
+    # Get target project
+    target_project = get_project_by_id(session, data.id)
 
-    if target_project:
-        # check if target project is belongs to current user profil
-        if target_project.profile_id == profile.id:
-            # Update target project
-            for key, value in data.dict().items():
-                setattr(target_project, key, value)
+    # Check if target project is belongs to current user profil
+    if target_project.profile_id == profile.id:
+        # Update target project
+        for key, value in data.dict().items():
+            setattr(target_project, key, value)
 
-            session.commit()
-            session.refresh(target_project)
-            return target_project
-        else:
-            # User is not authorized to edit this project
-            raise unauthorized_exception
+        session.commit()
+        session.refresh(target_project)
+        return target_project
     else:
-        # Handle case where the provided project_id doesn't match any existing project
-        raise not_found_exception
+        # User is not authorized to edit this project
+        raise unauthorized_exception

@@ -4,11 +4,16 @@ from sqlmodel import Session, select
 
 from src.database import get_session
 from src.auth.models import UserInDB
-from src.auth.service import get_current_active_user
+from src.auth.service import get_current_active_user, get_user_by_id
 
 from src.projects.models import Project
 from src.projects.schemas import ProjectData, EditProjectData, ProjectResponse
-from src.projects.service import create_new_project, get_user_pojects, edit_user_project
+from src.projects.service import (
+    create_new_project,
+    get_user_pojects,
+    get_project_by_id,
+    edit_user_project,
+)
 
 
 router = APIRouter()
@@ -25,7 +30,7 @@ async def create_project(
     current_user: Annotated[UserInDB, Depends(get_current_active_user)],
     session: Session = Depends(get_session),
 ):
-    # create new project
+    # Create new project
     return create_new_project(session, data, current_user)
 
 
@@ -35,11 +40,12 @@ async def create_project(
     tags=["projects"],
 )
 async def read_projects(session: Session = Depends(get_session)):
+    # Get all projects list
     statement = select(Project)
     results = session.exec(statement)
-    users = results.all()
+    projects = results.all()
 
-    return users
+    return projects
 
 
 @router.get(
@@ -51,15 +57,38 @@ async def read_projects_me(
     current_user: Annotated[UserInDB, Depends(get_current_active_user)],
     session: Session = Depends(get_session),
 ):
-    # get current user project
-    return get_user_pojects(session, current_user)
+    # Get current user project
+    return get_user_pojects(session, current_user.id)
+
+
+@router.get(
+    "/projects/{projet_id}",
+    response_model=ProjectResponse,
+    tags=["projects"],
+)
+async def read_single_project(projet_id: int, session: Session = Depends(get_session)):
+    # Get target project by project id
+    return get_project_by_id(session, projet_id)
+
+
+@router.get(
+    "/projects_user/{user_id}",
+    response_model=List[Union[ProjectResponse, None]],
+    tags=["projects"],
+)
+async def read_user_projects(user_id: int, session: Session = Depends(get_session)):
+    # Get target user by user id
+    user = get_user_by_id(session, user_id)
+
+    # Get all projects for given user id
+    return get_user_pojects(session, user.id)
 
 
 @router.post("/edit_project", response_model=ProjectResponse, tags=["projects"])
-async def read_projects_me(
+async def edit_projects_me(
     data: EditProjectData,
     current_user: Annotated[UserInDB, Depends(get_current_active_user)],
     session: Session = Depends(get_session),
 ):
-    # edit target project
+    # Edit target project
     return edit_user_project(session, data, current_user)
