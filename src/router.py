@@ -4,13 +4,12 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Request, Form, status
 from fastapi.responses import Response, HTMLResponse
 from fastapi.templating import Jinja2Templates
-from sqlmodel import Session
+from sqlmodel import select, Session
 
 from src.database import get_session
 from src.utils import get_error_respose, get_success_respose
 from src.config import JWT_ACCESS_TOKEN_EXPIRE_MINUTES
 from src.auth.models import UserInDB, Profile
-
 from src.auth.service import (
     create_user,
     create_user_profile,
@@ -21,6 +20,8 @@ from src.auth.service import (
     get_profile_by_user_id,
     get_current_user_profile,
 )
+from src.projects.models import Project
+from src.projects.service import get_all_projects, get_user_pojects
 
 router = APIRouter()
 
@@ -28,8 +29,19 @@ templates = Jinja2Templates(directory="templates")
 
 
 @router.get("/", response_class=HTMLResponse, include_in_schema=False)
-async def homepage(*, request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+async def homepage(
+    *,
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    # Get all projects with profile infos
+    statement = select(Project, Profile).join(Profile)
+    results = session.exec(statement)
+    projects = results.all()
+
+    return templates.TemplateResponse(
+        "index.html", {"request": request, "projects": projects}
+    )
 
 
 @router.get("/register", response_class=HTMLResponse, include_in_schema=False)

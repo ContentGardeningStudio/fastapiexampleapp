@@ -1,9 +1,70 @@
-{% extends 'base.html' %}
+{% extends "base.html" %} {% block content %}
 
-{% block content %}
-<div class="bg-light my-5 p-5 rounded">
-  <h1>Hello!</h1>
-  <p class="lead">This is a demo / API example with FastAPI+SQLAlchemy+SQLModel.</p>
-  <a class="btn btn-lg btn-primary" href="/docs" role="button">View API docs »</a>
-</div>
+<!-- Home page -->
+<section class="container py-5 p-2 rounded">
+  <div class="row p-4 pb-0 pe-lg-0 pt-lg-5 align-items-center rounded-3">
+    <div class="col-lg-7 p-3 p-lg-5 pt-lg-3">
+      <div class="lc-block mb-3">
+        <div editable="rich">
+          <h1 class="fw-bold display-4">Unleash the Power of Collaboration
+          </h1>
+        </div>
+      </div>
+      <div class="lc-block mb-3">
+        <div editable="rich">
+          <p class="lead">Embark on a journey of creativity and innovation. Our platform empowers you to bring your
+            ideas to life by collaborating with like-minded individuals. Start or join projects, share your expertise,
+            and be part of a vibrant community.
+          </p>
+        </div>
+      </div>
+
+      <div class="lc-block d-grid gap-2 d-md-flex justify-content-md-start"><a class="btn btn-primary px-4 me-md-2"
+          href="/login" role="button">Get started</a>
+      </div>
+    </div>
+    <div class="col-lg-4 p-0 overflow-hidden shadow-lg">
+      <div class="lc-block"><img class="rounded w-100"
+          src="https://images.unsplash.com/photo-1493612276216-ee3925520721?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=MnwzNzg0fDB8MXxzZWFyY2h8M3x8d2Vic2l0ZXxlbnwwfDF8fHwxNjIxNDQ4NTEw&amp;ixlib=rb-1.2.1&amp;q=80&amp;w=1080"
+          alt="Photo by Diego PH" width="720"></div>
+    </div>
+  </div>
+
+  <div class="my-5 p-5 bg-body rounded">
+    <h2>Project Collaboration in Action</h2>
+    <div class="row mt-5">
+      <ul class="list-group">
+        {% for project, profile in projects %}
+        <li class="list-group-item ">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <img src="{{ url_for('static', path='/profiles/default_profile.png') }}" alt=""
+                style="width: 45px; height: 45px" class="rounded-circle" />
+              <div class="ms-3">
+                <p class="text-muted  mb-1">{{profile.username}}</p>
+                <p class="fw-bold mb-0">{{ project.title}}</p>
+              </div>
+            </div>
+            <a class="btn btn-link btn-rounded btn-sm" href="#" role="button">View</a>
+          </div>
+          <div class="accordion-header py-2">
+            <button class="accordion-button btn-light rounded collapsed" data-bs-toggle="collapse"
+              data-bs-target="#collapse_{{ loop.index0 }}" aria-expanded="false"
+              aria-controls="collapse_{{ loop.index0 }}">
+              Show description
+            </button>
+          </div>
+          <div id="collapse_{{ loop.index0 }}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              {{ project.description}}
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>
+<!-- end Home page -->
+
 {% endblock %}

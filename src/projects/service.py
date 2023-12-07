@@ -2,6 +2,7 @@ from fastapi import HTTPException, status
 from sqlmodel import Session, select
 
 from src.auth.service import get_profile_by_user_id
+from src.auth.models import Profile
 from src.projects.models import Project
 from src.projects.schemas import ProjectData, EditProjectData
 
@@ -47,6 +48,12 @@ def get_project_by_id(session: Session, project_id: int):
     else:
         # Handle case where the provided project_id doesn't match any existing project
         raise not_found_exception
+
+
+def get_all_projects(session: Session):
+    statement = select(Project)
+    results = session.exec(statement)
+    return results.all()
 
 
 def edit_user_project(session: Session, data: EditProjectData, user):

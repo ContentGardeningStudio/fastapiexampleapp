@@ -10,6 +10,7 @@ from src.projects.models import Project
 from src.projects.schemas import ProjectData, EditProjectData, ProjectResponse
 from src.projects.service import (
     create_new_project,
+    get_all_projects,
     get_user_pojects,
     get_project_by_id,
     edit_user_project,
@@ -41,11 +42,7 @@ async def create_project(
 )
 async def read_projects(session: Session = Depends(get_session)):
     # Get all projects list
-    statement = select(Project)
-    results = session.exec(statement)
-    projects = results.all()
-
-    return projects
+    return get_all_projects(session)
 
 
 @router.get(
