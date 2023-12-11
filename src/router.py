@@ -29,15 +29,15 @@ templates = Jinja2Templates(directory="templates")
 
 
 @router.get("/", response_class=HTMLResponse, include_in_schema=False)
-async def homepage(
+async def home_page(
     *,
     request: Request,
     session: Session = Depends(get_session),
 ):
-    # Get all projects with profile infos
+    # Get last 10 projects with profile infos
     statement = select(Project, Profile).join(Profile)
     results = session.exec(statement)
-    projects = results.all()
+    projects = results.all()[:10]
 
     return templates.TemplateResponse(
         "index.html", {"request": request, "projects": projects}
@@ -206,3 +206,36 @@ async def edit_profile_page(
         response = get_error_respose(request, message="Something went wrong.")
         response.status_code = 422
         return response
+
+
+@router.get("/projects", response_class=HTMLResponse, include_in_schema=False)
+async def projects_page(
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    # Get all projects with profile infos
+    statement = select(Project, Profile).join(Profile)
+    results = session.exec(statement)
+    projects = results.all()
+
+    return templates.TemplateResponse(
+        "projects.html", {"request": request, "projects": projects}
+    )
+
+
+@router.get("/projects/me", response_class=HTMLResponse, include_in_schema=False)
+async def edit_profile_page(
+    request: Request,
+    current_user: Annotated[UserInDB, Depends(get_current_user_with_redirect)],
+    session: Session = Depends(get_session),
+):
+    # Get current user project
+    projects = get_user_pojects(session, current_user.id)
+
+    return templates.TemplateResponse(
+        "components/private-projects.html",
+        {
+            "request": request,
+            "projects": projects,
+        },
+    )
