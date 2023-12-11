@@ -1,0 +1,30 @@
+{% extends "base.html" %} {% block content %}
+{% include('components/dashboard-nav.html') %}
+
+<!-- LOGIN FORM -->
+<div id="auth_box" class="auth-box my-5">
+    <div class="project-form" hx-ext="response-targets">
+        <form hx-post="/new_project" hx-ext='json-enc' hx-target-error="#errors">
+            <h1 class="h3 mb-4 fw-normal text-center">Add new project</h1>
+            <div id="errors"></div>
+            <div class="form-group mt-4">
+                <label for="field_title">Project title</label>
+                <input type="text" class="form-control" id="field_title" name="title" required>
+            </div>
+            <div class="form-group mt-4">
+                <label for="field_description">Project description</label>
+                <textarea class="form-control" id="field_description" name="description" rows="6"></textarea>
+            </div>
+            <div class="form-group mt-4">
+                <label for="field_url">Project URL</label>
+                <input type="text" class="form-control" id="field_url" name="url">
+            </div>
+            <button class="w-100 btn btn-lg btn-primary mt-4" type="submit">
+                Submit
+            </button>
+        </form>
+    </div>
+</div>
+<!-- END LOGIN FORM -->
+
+{% endblock %}

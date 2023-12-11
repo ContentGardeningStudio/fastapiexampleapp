@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import Annotated
+from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, Request, Form, status
 from fastapi.responses import Response, HTMLResponse
@@ -21,7 +21,8 @@ from src.auth.service import (
     get_current_user_profile,
 )
 from src.projects.models import Project
-from src.projects.service import get_all_projects, get_user_pojects
+from src.projects.service import get_user_pojects
+from src.projects.schemas import ProjectData
 
 router = APIRouter()
 
@@ -181,7 +182,7 @@ async def edit_profile_page(
     request: Request,
     profile: Annotated[Profile, Depends(get_current_user_profile)],
     username: str = Form(...),
-    bio: str = Form(...),
+    bio: Optional[str] = Form(...),
     session: Session = Depends(get_session),
 ):
     try:
@@ -195,7 +196,7 @@ async def edit_profile_page(
         session.refresh(profile)
 
         # if profile updated successfully
-        response = Response(status_code=status.HTTP_200_OK)
+        response = Response(status_code=status.HTTP_204_NO_CONTENT)
 
         # Add htmx redirect to user profile page
         response.headers["HX-Redirect"] = "/profile/me"
@@ -208,13 +209,47 @@ async def edit_profile_page(
         return response
 
 
+@router.get("/new_project", response_class=HTMLResponse, include_in_schema=False)
+async def new_project_page(request: Request):
+    return templates.TemplateResponse("new-project.html", {"request": request})
+
+
+@router.post("/new_project", response_class=HTMLResponse, include_in_schema=False)
+async def new_project_page(
+    request: Request,
+    profile: Annotated[Profile, Depends(get_current_user_profile)],
+    data: ProjectData,
+    session: Session = Depends(get_session),
+):
+    try:
+        # Create a new project
+        new_project = Project(profile_id=profile.id, **data.dict())
+
+        # Add the new project to the database session and commit
+        session.add(new_project)
+        session.commit()
+        session.refresh(new_project)
+
+        # if project added successfully
+        response = Response(status_code=status.HTTP_204_NO_CONTENT)
+
+        # Add htmx redirect to user projects page
+        response.headers["HX-Redirect"] = "/projects/me"
+
+        return response
+    except Exception as e:
+        response = get_error_respose(request, message="Something went wrong.")
+        response.status_code = 422
+        return response
+
+
 @router.get("/projects", response_class=HTMLResponse, include_in_schema=False)
 async def projects_page(
     request: Request,
     session: Session = Depends(get_session),
 ):
     # Get all projects with profile infos
-    statement = select(Project, Profile).join(Profile)
+    statement = select(Project, Profile).join(Profile).order_by(Project.id.desc())
     results = session.exec(statement)
     projects = results.all()
 
