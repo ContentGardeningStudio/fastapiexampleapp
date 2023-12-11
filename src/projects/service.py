@@ -26,7 +26,11 @@ def get_user_pojects(session: Session, user_id: int):
     # get current user profile
     profile = get_profile_by_user_id(session, user_id)
 
-    statement = select(Project).where(Project.profile_id == profile.id)
+    statement = (
+        select(Project)
+        .where(Project.profile_id == profile.id)
+        .order_by(Project.id.desc())
+    )
     results = session.exec(statement)
     return results.all()
 

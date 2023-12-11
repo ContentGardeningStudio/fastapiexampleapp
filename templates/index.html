@@ -41,11 +41,11 @@
               <img src="{{ url_for('static', path='/profiles/default_profile.png') }}" alt=""
                 style="width: 45px; height: 45px" class="rounded-circle" />
               <div class="ms-3">
-                <p class="text-muted  mb-1">{{profile.username}}</p>
-                <p class="fw-bold mb-0">{{ project.title}}</p>
+                <p class="text-muted  mb-1">{{ profile.username }}</p>
+                <p class="fw-bold mb-0">{{ project.title }}</p>
               </div>
             </div>
-            <a class="btn btn-link btn-rounded btn-sm" href="#" role="button">View</a>
+            <a class="btn btn-link btn-rounded btn-sm" href="/project/{{ project.id }}" role="button">View</a>
           </div>
           <div class="accordion-header py-2">
             <button class="accordion-button btn-light rounded collapsed" data-bs-toggle="collapse"
