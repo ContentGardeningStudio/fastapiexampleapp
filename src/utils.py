@@ -28,3 +28,15 @@ def get_success_respose(request, message, url_title, url_path):
     )
 
     return response
+
+
+def get_404_page(request):
+    response = templates.TemplateResponse(
+        "404.html",
+        {
+            "request": request,
+        },
+        status_code=404,
+    )
+
+    return response

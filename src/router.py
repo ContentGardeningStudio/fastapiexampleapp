@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 from sqlmodel import select, Session
 
 from src.database import get_session
-from src.utils import get_error_respose, get_success_respose
+from src.utils import get_error_respose, get_success_respose, get_404_page
 from src.config import JWT_ACCESS_TOKEN_EXPIRE_MINUTES
 from src.auth.models import UserInDB, Profile
 from src.auth.service import (
@@ -256,6 +256,34 @@ async def projects_page(
     return templates.TemplateResponse(
         "projects.html", {"request": request, "projects": projects}
     )
+
+
+@router.get(
+    "/project/{project_id}", response_class=HTMLResponse, include_in_schema=False
+)
+async def single_project_page(
+    request: Request,
+    project_id: int,
+    session: Session = Depends(get_session),
+):
+    # Get target project if existing
+    statement = select(Project, Profile).join(Profile).where(Project.id == project_id)
+    results = session.exec(statement)
+    project = results.first()
+
+    if project:
+        # Return target project infos
+        return templates.TemplateResponse(
+            "project-view.html",
+            {
+                "request": request,
+                "project": project[0],
+                "profile": project[1],
+            },
+        )
+    else:
+        # Project_id doesn't match any existing project return 404 page
+        return get_404_page(request)
 
 
 @router.get("/projects/me", response_class=HTMLResponse, include_in_schema=False)
