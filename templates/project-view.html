@@ -5,14 +5,14 @@
 <section style="background-color: #f4f5f7;">
     <div class="container py-5 h-100">
         <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col col-lg-6 mb-4 mb-lg-0">
+            <div class="col col-lg-8 mb-4 mb-lg-0">
                 <div class="card mb-3" style="border-radius: .5rem;">
                     <div class="row g-0">
                         <div class="col-md-4 text-center"
                             style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
                             <img src="{{ url_for('static', path='/profiles/default_profile.png') }}" alt="Avatar"
                                 class="img-fluid my-5" style="width: 80px;" />
-                            <h5>{{ profile.title }}</h5>
+                            <h5>{{ profile.username }}</h5>
                             <p>Contributor</p>
                             <i class="far fa-edit mb-5"></i>
                         </div>
@@ -33,8 +33,10 @@
                                     <p class="text-muted">{{ project.url }}</p>
                                 </div>
                                 <div class="row pb-4">
+                                    {% if project.stars is not none %}
                                     <h6>Rating</h6>
-                                    <p class="text-muted">{{ project.url }}</p>
+                                    <p class="text-muted">{{ project.stars }}/5</p>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
