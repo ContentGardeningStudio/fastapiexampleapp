@@ -59,19 +59,9 @@ def get_user_by_id(session: Session, id: int):
 
 
 def get_user_by_email(session: Session, email: str):
-    not_found_exception = HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="User not found.",
-    )
-
     statement = select(UserInDB).where(UserInDB.email == email)
     results = session.exec(statement)
-    user = results.first()
-
-    if user is None:
-        raise not_found_exception
-
-    return user
+    return results.first()
 
 
 def authenticate_user(session: Session, email: str, password: str):
