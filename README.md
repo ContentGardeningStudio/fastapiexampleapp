@@ -46,12 +46,20 @@ Ensure that your virtual environment is activated.
 
 2. Set up your environment:
 
-   - Development Mode:
+   - Use SQLite for the database
 
-     - Use SQLite for the database
-     - Set `DEVELOPMENT_MODE=True`
+   ```shell
+   cp .env.example .env
+   ```
 
-3. Run the application:
+3. Create database with Alembic
+
+   ```shell
+   # will create ./development.db
+   alembic upgrade head
+   ```
+
+4. Run the application:
 
    ```shell
    uvicorn src.main:app --reload

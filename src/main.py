@@ -5,7 +5,6 @@ from fastapi.responses import RedirectResponse
 
 
 from src import router as template_router
-from src.database import create_db_and_tables
 from src.auth import router as auth_router
 from src.projects import router as project_router
 from src.exceptions import RequiresLoginException
@@ -14,9 +13,6 @@ from src.config import (
     PROJECT_NAME,
     API_VERSION,
 )
-
-# create database
-create_db_and_tables()
 
 app = FastAPI(
     title=f"{PROJECT_NAME} API",
