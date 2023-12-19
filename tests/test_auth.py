@@ -24,7 +24,7 @@ client = TestClient(app)
 fake = Faker()
 fake_email = fake.email()
 fake_password = fake.password()
-fake_picture = fake.file_name(extension="jpg")
+fake_username = fake.name()
 fake_bio = fake.paragraph(nb_sentences=3)
 
 
@@ -143,7 +143,7 @@ def test_edit_current_user_profile(access_token):
     # Add the token to the headers
     headers = {"Authorization": f"Bearer {access_token}"}
 
-    profile_data = {"picture": fake_picture, "bio": fake_bio}
+    profile_data = {"username": fake_username, "bio": fake_bio}
 
     # Make a request to the /edit_profile endpoint with the token in the headers
     response = client.post("/edit_profile", json=profile_data, headers=headers)
@@ -152,9 +152,9 @@ def test_edit_current_user_profile(access_token):
     assert response.status_code == 201
 
     # Check if the response contains the expected keys and values
-    expected_keys = ["picture", "bio"]
+    expected_keys = ["username", "bio"]
     assert all(key in response.json() for key in expected_keys)
 
     # Check specific assertions for known values
-    assert response.json()["picture"] == fake_picture
+    assert response.json()["username"] == fake_username
     assert response.json()["bio"] == fake_bio
